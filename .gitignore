@@ -1,0 +1,17 @@
+.env
+algo_env/
+test.py
+a.py
+__pycache__
+.vscode
+test.ipynb
+.vscode/
+note.txt
+noteook.ipynb
+nohup.out
+log
+Plots
+Config
+Order_Book
+login_detials
+noteook copy.ipynb
