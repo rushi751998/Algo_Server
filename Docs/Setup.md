@@ -7,7 +7,7 @@ sudo timedatectl set-timezone Asia/Kolkata
 
 # Pip Setup
 ```code
-sudo yum install -y code3 code3-pip
+sudo yum install -y python3-pip
 ```
 
 
@@ -58,6 +58,7 @@ chromedriver --version
 
 ### Clean folder
 ```code
+cd ..
 rm -rf *
 ```
 
