@@ -1,5 +1,5 @@
 
-from core.Controller import Controller
+
 from abc import ABC,abstractmethod
 
 class BaseOrderManager(ABC):
@@ -47,5 +47,5 @@ class BaseOrderManager(ABC):
         pass
 
     @abstractmethod
-    def rename_columns(df):
+    def rename(df):
         pass

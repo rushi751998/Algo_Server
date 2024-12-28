@@ -2,16 +2,11 @@ from .base_stratagy import Base_Stratagy
 from ..Utils.Fields import F
 
 
-
-from server.stratagies.base_stratagy import *
-from server.loginmgmt.session_manger import SessionManager
-
-
-class Range_Breakout(Base_Stratagy) :
+class BTST(Base_Stratagy) :
     
     def __init__(self,config,order_book,db_orders):
         super().__init__() 
-        self.Name = F.RANGE_BREAKOUT
+        self.Name = F.BTST
         self.config = config
         self.order_book = order_book
         self.db_orders = db_orders
@@ -150,4 +145,3 @@ class Range_Breakout(Base_Stratagy) :
     def check_sl_hit(self):
         # Check sl order status and update to database
         pass
-

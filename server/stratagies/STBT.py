@@ -15,11 +15,11 @@ from server.core.handler import SessionHandler
 
 import time,logging
 
-class Fixed_SL(Base_Stratagy) :
+class STBT(Base_Stratagy) :
     
     def __init__(self,config,order_book,db_orders):
         super().__init__() 
-        self.Name = F.FIXED_SL
+        self.Name = F.STBT
         self.config = config
         self.order_book = order_book
         self.db_orders = db_orders

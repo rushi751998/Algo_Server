@@ -5,7 +5,7 @@ class Path:
     config : str
     config_BTST : str
     config_Fixed_SL : str
-    config_Logi : str
+    config_Login : str
     config_Range_Breakout : str
     config_STBT : str
     
@@ -18,17 +18,19 @@ class Path:
     plot_PL_Recording : str
     
     
-    def load_path():
-        base_path = 'test/'
+    def load():
+        base_path = ''
     
         Path.log = base_path + 'log/'
         
         Path.config = base_path + 'Config/'
-        Path.config_BTST = Path.config + 'BTST/'
-        Path.config_Fixed_SL = Path.config + 'Fixed_SL/'
         Path.config_Login = Path.config + 'Login/'
-        Path.config_Range_Breakout = Path.config + 'Range_Breakout/'
+        Path.config_BTST = Path.config + 'BTST/'
         Path.config_STBT = Path.config + 'STBT/'
+        Path.config_Fixed_SL = Path.config + 'Fixed_SL/'
+        Path.config_Range_Breakout = Path.config + 'Range_Breakout/'
+        Path.config_Token = Path.config + 'Token/'
+        Path.config_Scripts = Path.config + 'Scripts/'
         
         Path.order_book = base_path + 'Order_Book/'
         Path.order_book_Broker_Orders = Path.order_book + 'Broker_Orders/'
@@ -50,8 +52,9 @@ class Path:
                      Path.order_book_DB_Orders, 
                      Path.plot, 
                      Path.plot_Available_Margin, 
-                     Path.plot_PL_Recording]
+                     Path.plot_PL_Recording,
+                     Path.config_Token]
         for i in all_paths:
-            # os.makedirs(i, exist_ok=True)
+            os.makedirs(i, exist_ok=True)
             pass
         

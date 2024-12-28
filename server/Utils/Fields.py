@@ -1,115 +1,135 @@
-  
-class F : 
-    
-    # Entry F
-    entry_orderid = 'entry_orderid'
-    entry_price_initial = 'entry_price_initial'
-    entry_order_count = 'entry_order_count'
-    entry_order_execuation_type = 'entry_order_execuation_type'
-    entry_price = 'entry_price'
+class F:
+    USER = 'USER'
+    ENTRY_ORDERID = 'ENTRY_ORDERID'
+    ENTRY_PRICE_INITIAL = 'ENTRY_PRICE_INITIAL'
+    ENTRY_COUNT = 'ENTRY_COUNT'
+    ENTRY_TYPE = 'ENTRY_TYPE'
+    ENTRY_PRICE = 'ENTRY_PRICE'
     ENTRY_TIME = 'ENTRY_TIME'
     RANGE_START = 'RANGE_START'
     RANGE_END = 'RANGE_END'
+    SL_POINT = 'SL_POINT'
     ALLOWD = 'ALLOWD'
-    STRATAGY = 'STRATAGY'
+    TRADED = 'TRADED'
     SESSION = 'SESSION'
     BROKER_NAME = 'BROKER_NAME'
-    entry_orderid_status = 'entry_orderid_status'
-    entry_tag = 'entry_tag'
+    ENTRY_STATUS = 'ENTRY_STATUS'
+    ENTRY_TAG = 'ENTRY_TAG'
+    WAIT_PERCENT = 'WAIT_PERCENT'
     
-    # Exit Field
-    exit_orderid = 'exit_orderid'
-    exit_price_initial = 'exit_price_initial'
-    exit_order_count = 'exit_order_count'
-    exit_order_execuation_type = 'exit_order_execuation_type'
-    exit_reason = 'exit_reason'
-    exit_price = 'exit_price'
+    # EXIT FIELD
+    EXIT_ORDERID = 'EXIT_ORDERID'
+    EXIT_PRICE_INITIAL = 'EXIT_PRICE_INITIAL'
+    EXIT_PRICE = 'EXIT_PRICE'
+    EXIT_COUNT = 'EXIT_COUNT'
+    EXIT_TYPE = 'EXIT_TYPE'
+    EXIT_REASON = 'EXIT_REASON'
     EXIT_TIME = 'EXIT_TIME'
-    exit_orderid_status = 'exit_orderid_status'
-    exit_tag = 'exit_tag' 
-    exit_price = 'exit_price'
-    exit_percent = 'exit_percent'
+    EXIT_STATUS = 'EXIT_STATUS'
+    EXIT_TAG = 'EXIT_TAG'
+    EXIT_PERCENT = 'EXIT_PERCENT'
     
-    # Common firlds in orders
-    qty = 'qty'
-    Buy = 'Buy'
-    Sell = 'Sell'
-    product_type = 'product_type'
-    price = 'price'
-    loop_no = 'loop_no'
-    recording = 'recording'
-    index = 'index'
-    charges = 'charges'
-    pl = 'pl'
-    free_margin = 'free_margin'
-    drift_points = 'drift_points'
-    drift_rs = 'drift_rs'
-    transaction_type = 'transaction_type'
-    stCode = 'stCode'
+    # COMMON FIELDS IN ORDERS
+    QTY = 'QTY'
+    DIRECTION = 'DIRECTION'
+    PRODUCT_TYPE = 'PRODUCT_TYPE'
+    PRICE = 'PRICE'
+    LOOP_NO = 'LOOP_NO'
+    RECORDING = 'RECORDING'
+    INDEX = 'INDEX'
+    CHARGES = 'CHARGES'
+    PL = 'PL'
+    FREE_MARGIN = 'FREE_MARGIN'
+    DRIFT_PT = 'DRIFT_PT'
+    DRIFT_RS = 'DRIFT_RS'
+    TRANSACTION_TYPE = 'TRANSACTION_TYPE'
+    SEGEMENT = 'SEGEMENT'
+    ORDER_TYPE = 'ORDER_TYPE'
+    
+    OPTION_TYPE = 'OPTION_TYPE'
     CE = 'CE'
     PE = 'PE'
     XX = 'XX'
+    V = 'V'
+    LTP = 'LTP'
+    OI = 'OI'
     
-    # Order Status with reason
-    limit_order = 'limit_order'
-    market_order = 'market_order'
+    OPEN = 'OPEN'
+    HIGH = 'HIGH'
+    LOW = 'LOW'
+    CLOSE = 'CLOSE'
+    LTP = 'LTP'
+    VOLUME = 'VOLUME'
+    OI = 'OI'
     
-    open = "open"
-    re_entry_open = 're_entry_open'
-    # pending_order = 'pending_order'
-    # reentry_pending_order = 'reentry_pending_order'
-    closed = 'closed'
-    rejected = 'rejected'
-    # placed_sucessfully = 'placed_sucessfully'
+    BUY_AMOUNT = 'BUY_AMOUNT'
+    SELL_AMOUNT = 'SELL_AMOUNT'
+    FILLED_QTY = 'FILLED_QTY'
+    FILLED_BUY_QTY = 'FILLED_BUY_QTY'
+    FILLED_SELL_QTY = 'FILLED_SELL_QTY'
+    EXPIRY_DATE = 'EXPIRY_DATE'
+    STRIKE_PRICE = 'STRIKE_PRICE'
+    LOT_SIZE = 'LOT_SIZE'
+    CAPITAL = 'CAPITAL'
     
-    sl_hit = 'sl_hit'
-    day_end = 'day_end'
     
-    open = 'open'
-    high = 'high'
-    low = 'low'
-    close = 'close'
-    ltp = 'ltp'
-    v = 'v'
-    oi = 'oi'
+    # STRATEGY NAMES
+    STRATAGY = 'STRATAGY'
+    BASE_STRATAGY = 'BASE_STRATAGY'
     
-    buy_amount = 'buy_amount',
-    sell_amount = 'sell_amount',
-    filed_buy_qty = 'filed_buy_qty',
-    filed_sell_qty = 'filed_sell_qty',
-    
-    Range_start_time = "Range_start_time"
-    Range_end_time = "Range_end_time"
-    
-    # Staratgy Names
-    stratagy = 'stratagy'
+    FIXED_SL = 'FIXED_SL'
     FS_FIRST = 'FS_FIRST'
-    FS_SECOND =  'FS_SECOND'
+    FS_SECOND = 'FS_SECOND'
     FS_THIRD = 'FS_THIRD'
     FS_FOURTH = 'FS_FOURTH'
     FS_FIFTH = 'FS_FIFTH'
     
+    RANGE_BREAKOUT = 'RANGE_BREAKOUT'
     RB_FIRST = 'RB_FIRST'
-    RB_SECOND =  'RB_SECOND'
+    RB_SECOND = 'RB_SECOND'
     RB_THIRD = 'RB_THIRD'
     RB_FOURTH = 'RB_FOURTH'
     RB_FIFTH = 'RB_FIFTH'
     RB_SIXTH = 'RB_SIXTH'
     
+    STBT = 'STBT'
+    STBT_FIRST = 'STBT_FIRST'
+    STBT_SECOND = 'STBT_SECOND'
+    
+    BTST = 'BTST'
+    BTST_FIRST = 'BTST_FIRST'
+    BTST_SECOND = 'BTST_SECOND'
+    
     HEDGES = 'HEDGES'
     
-    # Other
-    kotak_neo = 'kotak_neo'
-    broker_name ='broker_name'
-    broker_session = 'broker_session'
-    nOrdNo = 'nOrdNo'
-    order_status = 'order_status'
-    order_id = 'order_id'
-    ticker = 'ticker'
-    data = 'data'
-    token = 'token'
-    tag = 'tag'
-    option_type = 'option_type'
-    message = 'message'
-    order_time = 'order_time'
+    # INDEX
+    NIFTY = 'NIFTY'
+    BANKNIFTY = 'BANKNIFTY'    
+    MIDCPNIFTY = 'MIDCPNIFTY'    
+    FINNIFTY = 'FINNIFTY'      
+    NIFTYNXT50 = 'NIFTYNXT50'    
+    BANKEX = 'BANKEX'
+    SENSEX50 = 'SENSEX50'      
+    SENSEX = 'SENSEX'
     
+    # OTHER
+    KOTAK_NEO = 'KOTAK_NEO'
+    FLAT_TRADE = 'FLAT_TRADE'
+    
+    ORDER_STATUS = 'ORDER_STATUS'
+    ORDERID = 'ORDERID'
+    TICKER = 'TICKER'
+    TOKEN = 'TOKEN'
+    TAG = 'TAG'
+    DTE = 'DTE'
+    OPTION_TYPE = 'OPTION_TYPE'
+    MESSAGE = 'MESSAGE'
+    ORDER_TIME = 'ORDER_TIME'
+    
+    CONSUMER_KEY = "CONSUMER_KEY"
+    SECRETKEY = "SECRETKEY"
+    MOBILENUMBER = "MOBILENUMBER"
+    LOGIN_PASSWORD = "LOGIN_PASSWORD"
+    SESSION_VALIDATION_KEY = "SESSION_VALIDATION_KEY"
+    TWO_FACTOR_CODE = "TWO_FACTOR_CODE"
+

@@ -1,0 +1,12 @@
+
+# ./dist/NorenRestApi-0.0.29-py3-none-any.whl
+pyyaml
+selenium
+pyotp
+pymongo 
+git+https://github.com/Kotak-Neo/kotak-neo-api.git#egg=neo_api_client
+pandas
+bs4
+requests
+websocket_client
+webdriver_manager

@@ -8,6 +8,12 @@ import ast
 import datetime
 import time
 import logging
+from .Path import Path
+from .Fields import F
+from ..models.ProductType import ProductType
+from server.loginmgmt.session_manger import SessionManager
+import pandas as pd
+
 
 def is_hoilyday() : 
     try : 
@@ -69,7 +75,103 @@ def wait_until_next_minute():
     sleep_time = (next_minute - now).total_seconds()
     return sleep_time
 
+def set_stratagy_config():
+    Env.load()
+    Path.load()
+    try : 
+        db_df = pd.DataFrame(database()[Env.today].find())[F.STRATAGY].unique()
+    except Exception as e:
+        db_df = []
+    FS = {}
+    RB = {}
+    BTST = {}
+    STBT = {}
+    # Path.load_path()
+    
+    folder_path = Path.config_Fixed_SL
+    for filename in os.listdir(folder_path):
+        if filename.endswith('.json'):
+            stratagy = (filename.split('.')[0])
+            with open(os.path.join(folder_path, filename), 'r') as f:
+                data = json.load(f)
+                data[F.ENTRY_TIME] = dt.strptime(f"{Env.today} {data[F.ENTRY_TIME]}","%Y-%m-%d %H:%M")
+                data[F.EXIT_TIME] = dt.strptime(f"{Env.today} {data[F.EXIT_TIME]}","%Y-%m-%d %H:%M")
+                data[F.ALLOWD] = bool(data[F.ALLOWD])
+                
+                if data[F.ALLOWD] :
+                    if stratagy in db_df:
+                        data[F.TRADED] = True
+                    else :
+                        data[F.TRADED] = False
+                    
+                    FS[stratagy]= data
+                    logging.info(f'Loded {filename}')
+                
+                
+    folder_path = Path.config_Range_Breakout
+    for filename in os.listdir(folder_path):
+        if filename.endswith('.json'):
+            stratagy = (filename.split('.')[0])
+            with open(os.path.join(folder_path, filename), 'r') as f:
+                data = json.load(f)
+                data[F.RANGE_START] = dt.strptime(f"{Env.today} {data[F.RANGE_START]}","%Y-%m-%d %H:%M")
+                data[F.RANGE_END] = dt.strptime(f"{Env.today} {data[F.RANGE_END]}","%Y-%m-%d %H:%M")
+                data[F.EXIT_TIME] = dt.strptime(f"{Env.today} {data[F.EXIT_TIME]}","%Y-%m-%d %H:%M")
+                data[F.ALLOWD] = bool(data[F.ALLOWD])
+                
+                if data[F.ALLOWD] :
+                    if stratagy in db_df:
+                        data[F.TRADED] = True
+                    else :
+                        data[F.TRADED] = False
+                        
+                    RB[stratagy]= data
+                    logging.info(f'Loded {filename}')
+                    
+    folder_path = Path.config_BTST
+    for filename in os.listdir(folder_path):
+        if filename.endswith('.json'):
+            stratagy = (filename.split('.')[0])
+            with open(os.path.join(folder_path, filename), 'r') as f:
+                data = json.load(f)
+                data[F.RANGE_START] = dt.strptime(f"{Env.today} {data[F.RANGE_START]}","%Y-%m-%d %H:%M")
+                data[F.RANGE_END] = dt.strptime(f"{Env.today} {data[F.RANGE_END]}","%Y-%m-%d %H:%M")
+                data[F.EXIT_TIME] = dt.strptime(f"{Env.today} {data[F.EXIT_TIME]}","%Y-%m-%d %H:%M")
+                data[F.ALLOWD] = bool(data[F.ALLOWD])
+                
+                if data[F.ALLOWD] :
+                    if stratagy in db_df:
+                        data[F.TRADED] = True
+                    else :
+                        data[F.TRADED] = False
+                        
+                    BTST[stratagy]= data
+                    logging.info(f'Loded {filename}')
+                    
+    folder_path = Path.config_STBT
+    for filename in os.listdir(folder_path):
+        if filename.endswith('.json'):
+            stratagy = (filename.split('.')[0])
+            with open(os.path.join(folder_path, filename), 'r') as f:
+                data = json.load(f)
+                data[F.ENTRY_TIME] = dt.strptime(f"{Env.today} {data[F.ENTRY_TIME]}","%Y-%m-%d %H:%M")
+                data[F.EXIT_TIME] = dt.strptime(f"{Env.today} {data[F.EXIT_TIME]}","%Y-%m-%d %H:%M")
+                data[F.ALLOWD] = bool(data[F.ALLOWD])
+                
+                if data[F.ALLOWD] :
+                    if stratagy in db_df:
+                        data[F.TRADED] = True
+                    else :
+                        data[F.TRADED] = False
+                    
+                    STBT[stratagy]= data
+                    logging.info(f'Loded {filename}')
+                
+                
+    Env.stratagy_config = {F.RANGE_BREAKOUT : RB,F.FIXED_SL:FS,F.STBT:STBT,F.BTST:BTST}
 
+def time_tag():
+   return str(round(time.time()))[-6:]
 
 def setup_daily_logger(empty:bool = False):
     log_directory = 'log'
@@ -85,7 +187,7 @@ def setup_daily_logger(empty:bool = False):
         ]
     )
     # logging.info('Logger setup complete')
-    return logging
+    # return logging
 
 def is_straragy_traded(stratagy=None,traded_df=None,all_closed=False):
     if stratagy != None :
@@ -98,37 +200,36 @@ def is_straragy_traded(stratagy=None,traded_df=None,all_closed=False):
             return True
                  
 def database(day_tracker = False, recording = False):
-    mongo_db = pymongo.MongoClient(env_variables.mongodb_link)
+    mongo_db = pymongo.MongoClient(Env.mongodb_link)
     if day_tracker :
-        data = mongo_db[f'Performance_{dt.now().year}']
+        return mongo_db[f'Performance_{dt.now().year}']
     elif recording : 
-        data = mongo_db[F.recording]
+        return mongo_db[F.recording]
     else : 
-         data = mongo_db[env_variables.database_name]
-    return data
-
+        return mongo_db[Env.database_name]
+    
 def send_message(message:str,user:dict,stratagy = None, emergency = False, send_image = False):
-    # telegram_api_dict = env_variables.telegram_api_dict
     current_time = dt.now()
-    bot_chatId = user['chatId' ]
+    user = SessionManager.User_Config
+    bot_chatId = SessionManager.User_Config['chatId']
     if not send_image : 
         if emergency : 
             bot_token = user['emergency_bot']
-            logging.warning(f'{message}\n')
+            # logging.warning(f'{message}\n')
             
         elif stratagy == None: 
             bot_token = user['common_logger']
-            logging.info(f'{message}\n')
+            # logging.info(f'{message}\n')
 
         else : 
             bot_token = user[stratagy+"_bot"]
-            logging.info(f'{message}\n')
+            # logging.info(f'{message}\n')
             
         message = f'{dt.strftime(current_time,"%H:%M:%S")}\n{message}'
         response = requests.post(f'https://api.telegram.org/bot{bot_token}/sendMessage', json = {'chat_id': bot_chatId,'text': message})
         if response.status_code != 200:
             message = f"{stratagy}_bot not able to send message Reason : {response.text}" 
-            env_variables.logger.warning(f'Retry Trigger_finder responce : {message}')
+            logging.warning(f'Retry Trigger_finder responce : {message}')
             bot_token = user['emergency_bot']
             message = f'{dt.strftime(current_time,"%H:%M:%S")}\n{message}'
             response = requests.post(f'https://api.telegram.org/bot{bot_token}/sendMessage', json = {'chat_id': bot_chatId,'text': message})
@@ -147,95 +248,51 @@ def send_message(message:str,user:dict,stratagy = None, emergency = False, send_
                 response = requests.post(f'https://api.telegram.org/bot{bot_token}/sendMessage', json = {'chat_id': bot_chatId,'text': message})
                 logging.warning(f'Responce from retry-image : {response}')    
             
-class env_variables:
+class Env:
     env_variable_initilised = False
-    option_chain_set = False
-    days_to_expiry = None
     today = None
     thread_list = []
     stratagy_config = None
     socket_open = False
-    option_chain : dict
-    logger = None #setup_daily_logger(True)
-    lot_size : int
+    LOT_SIZE = None
+    DTE = None
+    # option_chain : dict
+    # logger = None #setup_daily_logger(True)
     selling_lots : int
     hedge_lots : int
     hedge_cost : float
-    index : str 
+    INDEX : str 
     expiry_base_instrument : bool
     product_type : str
-    
-    fifty_per_risk : float
-    re_entry_risk : float
-    wait_trade_risk  : float
     
     mongodb_link : str
     day_tracker : bool
     database_name : str
-    consumer_key : str
-    secretKey : str
-    mobileNumber : str
-    login_password : str
-    broker_name : str  
-    session_validation_key : str
-    two_factor_code : str
-    allowed_loss_percent : str
-    exceptational_hoilydays : list
-    exceptational_tradingdays  : list
 
-    login : str
-    FS_FIRST : str
-    FS_SECOND : str
-    FS_THIRD : str
-    FS_FOURTH : str
-    FS_FIFTH : str
-    exit_orders : str
-    logout_session : str
-    Buy_Hedges : str 
-    
-    RB_Buy_first : str
-    RB_Buy_second : str
-    RB_Buy_third : str
-    RB_Buy_fourth : str
-    
     capital : str
     qty_partation_loop : int
     telegram_api_dict : dict
     
     @classmethod
-    def load_env_variable (self):
+    def load (self):
         import os
-        load_dotenv() 
+        load_dotenv()
+        setup_daily_logger()
         str_to_bool = {'False' : False,'True':True }
-        
-        self.env_variable_initilised= True
-        self.option_chain_set = False
-        self.expiry_base_index = None
-        self.thread_list = []
-        self.index = None
-        self.today = dt.today().date()
-        self.lot_size = 1
-        self.selling_lots = int(os.environ['selling_lots']) 
-        self.hedge_lots = int(os.environ['hedge_lots']) 
         self.hedge_cost = 0
-        
+        self.today = str(dt.now().date())
         self.expiry_base_instrument = str_to_bool[os.environ['expiry_base_instrument']]
-        self.hedge_price = float(os.environ['hedge_price'])
         self.day_tracker = str_to_bool[os.environ['day_tracker']]
         
         self.mongodb_link = os.environ['mongodb_link'] 
         self.database_name = os.environ['database_name'] 
         
-        self.product_type = 'MIS'
+        self.product_type = ProductType.MIS
             
         self.allowed_loss_percent = float(os.environ['allowed_loss_percent'])
         self.qty_partation_loop = int(os.environ['qty_partation_loop'])
-        self.logger = setup_daily_logger()
-        
+        # self.stratagy_config = set_stratagy_config()
 
-        
-
-            
         return True
 
  

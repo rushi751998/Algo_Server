@@ -1,17 +1,12 @@
 import neo_api_client
 from .BaseLogin import BaseLogin
-from server.utils import send_message
-import pandas as pd
-from  datetime import datetime as dt
-from dateutil.relativedelta import relativedelta
+from ..Utils.Utils import send_message
+from ..Utils.Fields import F
 import time
-import pandas as pd
-import threading
-from server.utils import set_coloumn_name, order_staus_dict,F, env_variables as env
 nan = 'nan'
 
 option_chain = {}
-ticker_to_token= {}
+token_to_ticker= {}
 
 class Kotak_Neo_Login(BaseLogin):
     
@@ -28,7 +23,7 @@ class Kotak_Neo_Login(BaseLogin):
             check_validation_key = credentials['session_validation_key']
             if session_validation_key == check_validation_key:
                 is_login = True
-                self.setBrokerHandle(credentials['id'],broker_session)
+                self.setBrokerHandle(credentials[F.USER],broker_session)
                 # self.setAccessToken(session_validation_key)
                 
             else : 
@@ -47,6 +42,6 @@ class Kotak_Neo_Login(BaseLogin):
                             access_token=None, neo_fin_key=None)
         broker_session.login(mobilenumber=credentials['mobileNumber'], password=credentials['login_password'])
         session = broker_session.session_2fa(credentials['two_factor_code'])
-        return session[F.data]['greetingName'],broker_session 
+        return session['data']['greetingName'],broker_session 
             
         

@@ -1,5 +1,6 @@
 .env
 algo_env/
+algo
 test.py
 a.py
 __pycache__
@@ -15,3 +16,4 @@ Config
 Order_Book
 login_detials
 noteook copy.ipynb
+chromedriver.exe
