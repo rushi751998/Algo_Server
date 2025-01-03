@@ -275,7 +275,6 @@ class Env:
     
     @classmethod
     def load (self):
-        import os
         load_dotenv()
         setup_daily_logger()
         str_to_bool = {'False' : False,'True':True }
