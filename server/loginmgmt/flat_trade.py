@@ -20,13 +20,10 @@ from .BaseLogin import BaseLogin
 from ..Utils.Fields import F
 from ..Utils.Path import Path
 
-
-chrome_options = Options()
-chrome_options.add_argument("--headless")  # Run in headless mode
-chrome_options.add_argument("--disable-gpu")
-chrome_options.add_argument("--no-sandbox")
-chrome_options.add_argument("--disable-dev-shm-usage")  # Prevent /dev/shm issues
-chrome_options.add_argument("--remote-debugging-port=9222")  # Debugging port
+options = Options()
+options.add_argument("--headless")
+options.add_argument("--no-sandbox")
+options.add_argument("--disable-dev-shm-usage")
 
 option_chain = {}
 token_to_ticker= {}
@@ -105,9 +102,11 @@ class Flat_Trade_Login(BaseLogin):
             password = credentials['login_password']
             
             service = Service(ChromeDriverManager().install())
-            driver = webdriver.Chrome(service=service)
+            # driver = webdriver.Chrome()
+            driver = webdriver.Chrome(options=options)
             driver.get(f'https://auth.flattrade.in/?app_key={api_key}')
             time.sleep(5)
+            logging.info('Login Page Opened')
             user_id_input = driver.find_element(By.ID, 'input-19')
             user_id_input.send_keys(userid)
             password_input = driver.find_element(By.ID, 'pwd')
