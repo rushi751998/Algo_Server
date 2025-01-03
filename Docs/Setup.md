@@ -2,44 +2,6 @@
 ```code
 sudo timedatectl set-timezone Asia/Kolkata
 ```
-# MiniConda Setup
-Download MiniConda
-```code
-wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
-```
-Verify the Installer
-```code
-sha256sum Miniconda3-latest-Linux-x86_64.sh
-```
-
-Run the Installer
-```code
-bash Miniconda3-latest-Linux-x86_64.sh
-```
-
-Restart your shell or run:
-```code
-source ~/.bashrc
-```
-
-Verify the installation:
-```code
-conda --version
-```
-
-Conda environments
-```code
-conda info --envs
-```
-
-Create and activate a test environment:
-```code
-conda create -n algo-env python=3.11 -y
-conda activate algo-env
-```
-
-
-
 
 # Selenium  Setup"
 
@@ -90,6 +52,52 @@ chromedriver --version
 ```code
 cd ..
 rm -rf *
+```
+# MiniConda Setup
+Download MiniConda
+```code
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+```
+Verify the Installer
+```code
+sha256sum Miniconda3-latest-Linux-x86_64.sh
+```
+
+Run the Installer
+```code
+bash Miniconda3-latest-Linux-x86_64.sh
+```
+
+Restart your shell or run:
+```code
+source ~/.bashrc
+```
+
+Verify the installation:
+```code
+conda --version
+```
+
+Remove File
+```code
+rm Miniconda3-latest-Linux-x86_64.sh 
+```
+
+
+Conda environments
+```code
+conda info --envs
+```
+
+Create and activate a test environment:
+```code
+conda create -n algo-env python=3.11 -y
+conda activate algo-env
+```
+
+
+
+
 
 # Git Setup
 ### Install Git
@@ -108,6 +116,8 @@ git clone https://github.com/rushi751998/Algo_Server.git
 cd Algo_Server
 pip install -r requirements.txt
 ```
+# Set Config
+- Connect with instacne with  Winscp and replace config folder with config data
 
 # Test All requirements
 ```code
@@ -190,6 +200,13 @@ For debugging
 ```code
 nano /var/log/algo_trigger.log
 ```
+
+Auto Clear log
+```code
+sudo journalctl --vacuum-size=1M
+```
+
+
 
 
 

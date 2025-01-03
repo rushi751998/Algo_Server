@@ -1,4 +1,4 @@
-import os, json
+import os, json, logging
 
 # from .kotak_neo import Kotak_Neo_Login
 from .flat_trade import Flat_Trade_Login
@@ -62,4 +62,5 @@ class SessionManager:
                                 data[name] = qty_str_split
                                 
                             SessionManager.User_Config = data
-          
+                            
+        logging.info('loaded Credentials')
