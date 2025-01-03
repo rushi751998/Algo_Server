@@ -203,8 +203,15 @@ nano /var/log/algo_trigger.log
 
 Auto Clear log
 ```code
-sudo journalctl --vacuum-size=1M
+sudo rm -rf /var/log/journal/*
 ```
+
+Prevent the Service from Starting on Boot
+```code
+sudo systemctl disable algo_trigger.service
+```
+
+
 
 
 

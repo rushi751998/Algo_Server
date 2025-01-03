@@ -167,7 +167,7 @@ def set_stratagy_config():
                     STBT[stratagy]= data
                     logging.info(f'Loded {filename}')
                 
-                
+    logging.info('Stratagy Config Setup Completed')                
     Env.stratagy_config = {F.RANGE_BREAKOUT : RB,F.FIXED_SL:FS,F.STBT:STBT,F.BTST:BTST}
 
 def time_tag():
