@@ -24,7 +24,7 @@ options.add_argument("--disable-dev-shm-usage")
 driver = webdriver.Chrome(options=options)
 
 # # For Windows
-# driver.get("https://www.google.com")
+driver.get("https://www.google.com")
 
 
 
@@ -58,4 +58,3 @@ response = requests.post(url, data=payload)
 print(response.json())
 
 driver.quit()
-
