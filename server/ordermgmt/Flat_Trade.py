@@ -147,40 +147,40 @@ class FlatTrade(BaseOrderManager):
     @staticmethod
     def Order_book():
         user = SessionManager.User_Config
-        try :
-            responce = user[F.SESSION].get_order_book()
-            # if responce['stat'] == 'Ok' : 
-            all_orders = pd.DataFrame(responce)
-            all_orders = FlatTrade.rename(all_orders)[[F.ORDERID,F.SEGEMENT,F.TICKER,F.TOKEN,F.QTY,F.PRODUCT_TYPE,F.MESSAGE,'instname','dname',F.PRICE,F.ORDER_STATUS,F.ORDER_TIME,F.FILLED_QTY]]
-            all_orders[[F.INDEX,F.EXPIRY_DATE,F.STRIKE_PRICE,F.OPTION_TYPE]] = (all_orders['dname'].str.strip().str.split(' ',expand = True))
-            # all_orders[F.SEGEMENT].replace(FlatTrade.segment_dict, inplace=True)
-            all_orders.replace({F.ORDER_STATUS:{'REJECTED': OrderStatus.REJECTED,
-                                                'COMPLETE': OrderStatus.COMPLETE,
-                                                'OPEN': OrderStatus.OPEN,
-                                                'TRIGGER_PENDING': OrderStatus.TRIGGER_PENDING,
-                                                'CANCELLED' : OrderStatus.CANCELLED
-                                                }}, inplace=True)
-            
-            
-            
-            
-            # all_orders[F.ORDER_STATUS].replace({'REJECTED': OrderStatus.REJECTED,
-            #                                     'COMPLETE': OrderStatus.COMPLETE,
-            #                                     'OPEN': OrderStatus.OPEN,
-            #                                     'TRIGGER_PENDING': OrderStatus.TRIGGER_PENDING,
-            #                                     'CANCELLED' : OrderStatus.CANCELLED
-            #                                     }, inplace=True)
-            
-            all_orders[F.ORDER_TIME] = pd.to_datetime(all_orders[F.ORDER_TIME], format="%H:%M:%S %d-%m-%Y")
-            # all_orders[F.ORDER_TIME] = pd.to_datetime(all_orders[F.ORDER_TIME],"%H:%M:%S %d-%m-%Y")
-            # all_orders[F.ORDER_TIME] = all_orders[F.ORDER_TIME].apply()
-            
-            # all_orders[F.TRANSACTION_TYPE].replace(FlatTrade.transaction_type, inplace=True)
-            return all_orders
+        # try :
+        responce = user[F.SESSION].get_order_book()
+        # if responce['stat'] == 'Ok' : 
+        all_orders = pd.DataFrame(responce)
+        all_orders = FlatTrade.rename(all_orders)[[F.ORDERID,F.SEGEMENT,F.TICKER,F.TOKEN,F.QTY,F.PRODUCT_TYPE,F.MESSAGE,'instname','dname',F.PRICE,F.ORDER_STATUS,F.ORDER_TIME,F.FILLED_QTY]]
+        all_orders[[F.INDEX,F.EXPIRY_DATE,F.STRIKE_PRICE,F.OPTION_TYPE]] = (all_orders['dname'].str.strip().str.split(' ',expand = True))
+        # all_orders[F.SEGEMENT].replace(FlatTrade.segment_dict, inplace=True)
+        all_orders.replace({F.ORDER_STATUS:{'REJECTED': OrderStatus.REJECTED,
+                                            'COMPLETE': OrderStatus.COMPLETE,
+                                            'OPEN': OrderStatus.OPEN,
+                                            'TRIGGER_PENDING': OrderStatus.TRIGGER_PENDING,
+                                            'CANCELLED' : OrderStatus.CANCELLED
+                                            }}, inplace=True)
+        
+        
+        
+        
+        # all_orders[F.ORDER_STATUS].replace({'REJECTED': OrderStatus.REJECTED,
+        #                                     'COMPLETE': OrderStatus.COMPLETE,
+        #                                     'OPEN': OrderStatus.OPEN,
+        #                                     'TRIGGER_PENDING': OrderStatus.TRIGGER_PENDING,
+        #                                     'CANCELLED' : OrderStatus.CANCELLED
+        #                                     }, inplace=True)
+        
+        all_orders[F.ORDER_TIME] = pd.to_datetime(all_orders[F.ORDER_TIME], format="%H:%M:%S %d-%m-%Y")
+        # all_orders[F.ORDER_TIME] = pd.to_datetime(all_orders[F.ORDER_TIME],"%H:%M:%S %d-%m-%Y")
+        # all_orders[F.ORDER_TIME] = all_orders[F.ORDER_TIME].apply()
+        
+        # all_orders[F.TRANSACTION_TYPE].replace(FlatTrade.transaction_type, inplace=True)
+        return all_orders
                 
-        except Exception as e:
-            send_message(message = f'Not able to get orderbook\nMessage : {e}\nresponce : {responce}', emergency = True,user=user)
-            return False
+        # except Exception as e:
+        #     send_message(message = f'Not able to get orderbook\nMessage : {e}\nresponce : {responce}', emergency = True,user=user)
+        #     return False
 
     @staticmethod
     def convert_Product_Type(productType):
@@ -252,6 +252,7 @@ class FlatTrade(BaseOrderManager):
             'qty': F.QTY,
             'rqty': F.FILLED_QTY,
             'avgprc': F.PRICE,
+            'prc': F.PRICE,
             'trantype': F.TRANSACTION_TYPE,
             'prctyp' : F.PRODUCT_TYPE,
             'exch': F.SEGEMENT,

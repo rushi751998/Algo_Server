@@ -105,7 +105,8 @@ def set_stratagy_config():
                         data[F.TRADED] = False
                     
                     FS[stratagy]= data
-                    logging.info(f'Loded {filename}')
+                    # logging.info(f'Loded {filename}')
+                    break
                 
                 
     folder_path = Path.config_Range_Breakout
@@ -126,7 +127,7 @@ def set_stratagy_config():
                         data[F.TRADED] = False
                         
                     RB[stratagy]= data
-                    logging.info(f'Loded {filename}')
+                    # logging.info(f'Loded {filename}')
                     
     folder_path = Path.config_BTST
     for filename in os.listdir(folder_path):
@@ -146,7 +147,7 @@ def set_stratagy_config():
                         data[F.TRADED] = False
                         
                     BTST[stratagy]= data
-                    logging.info(f'Loded {filename}')
+                    # logging.info(f'Loded {filename}')
                     
     folder_path = Path.config_STBT
     for filename in os.listdir(folder_path):
@@ -165,7 +166,7 @@ def set_stratagy_config():
                         data[F.TRADED] = False
                     
                     STBT[stratagy]= data
-                    logging.info(f'Loded {filename}')
+                    # logging.info(f'Loded {filename}')
                 
     logging.info('Stratagy Config Setup Completed')                
     Env.stratagy_config = {F.RANGE_BREAKOUT : RB,F.FIXED_SL:FS,F.STBT:STBT,F.BTST:BTST}
@@ -256,14 +257,14 @@ class Env:
     socket_open = False
     LOT_SIZE = None
     DTE = None
-    # option_chain : dict
-    # logger = None #setup_daily_logger(True)
+    
     selling_lots : int
     hedge_lots : int
     hedge_cost : float
     INDEX : str 
     expiry_base_instrument : bool
     product_type : str
+    environment : str
     
     mongodb_link : str
     day_tracker : bool
@@ -290,7 +291,7 @@ class Env:
             
         self.allowed_loss_percent = float(os.environ['allowed_loss_percent'])
         self.qty_partation_loop = int(os.environ['qty_partation_loop'])
-        # self.stratagy_config = set_stratagy_config()
+        self.environment = os.environ['environment']
 
         return True
 

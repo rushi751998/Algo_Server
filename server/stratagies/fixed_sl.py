@@ -26,8 +26,8 @@ class Fixed_SL(Base_Stratagy) :
     
     def Process(self):
         # self.db.drop()
-        self.find_trigger()
         self.validate_order(self.order_book,self.db_orders,self.Name)
+        self.find_trigger()
         self.place_sl_order()
         self.is_sl_exitst()
         self.is_lpt_above_sl()

@@ -191,14 +191,9 @@ Reboot the instance:
 sudo reboot
 ```
 
-
 For debugging
 ```code
 sudo journalctl -u algo_trigger.service
-```
-For debugging
-```code
-nano /var/log/algo_trigger.log
 ```
 
 Auto Clear log

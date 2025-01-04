@@ -39,7 +39,7 @@ class Flat_Trade_Socket:
             # print(self.is_prepared)
             # token_list = [{"instrument_token":i,"exchange_segment":'nse_fo'} for i in option_chain.keys()]
             try :
-                self.session.start_websocket(order_update_callback=self.on_order, subscribe_callback=self.update_option_chain, socket_open_callback=self.on_open,socket_close_callback = self.on_close,socket_error_callback = self.on_error)
+                self.session.start_websocket(order_update_callback=self.on_order, subscribe_callback=self.update_option_chain, socket_open_callback=self.on_open, socket_close_callback = self.on_close,socket_error_callback = self.on_error)
                 # self.session.subscribe(['NFO|46125'])
                 self.session.subscribe(self.tokens)
     
@@ -71,9 +71,9 @@ class Flat_Trade_Socket:
         Env.socket_open= True
         # send_message(message = f'Socket Started : {message}')
         
-    def on_close(self,message):
+    def on_close(self):
         Env.socket_open= False
-        logging.warning(f'on_close : {message}')
+        logging.warning(f'Socket Closed')
         # send_message(message = f'Socket Started : {message}')
         
     def on_error(self,message):
