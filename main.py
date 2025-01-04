@@ -15,7 +15,8 @@ app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
 app.layout = layout
     
 def prod_run():
-    app.run_server(debug = False)
+    # app.run_server(debug = False)
+    app.run_server(host="0.0.0.0", port=8050, debug=False)
     
 def qa_run():
     app.run_server(debug = True)

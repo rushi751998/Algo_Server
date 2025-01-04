@@ -206,6 +206,11 @@ Prevent the Service from Starting on Boot
 sudo systemctl disable algo_trigger.service
 ```
 
+Install Nginx
+```code
+sudo yum install nginx -y
+```
+
 
 
 
