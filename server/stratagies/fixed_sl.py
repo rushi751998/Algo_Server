@@ -35,21 +35,32 @@ class Fixed_SL(Base_Stratagy) :
             self.validate_order(self.order_book,self.db_orders,self.Name)
             self.check_sl_hit()
 
+    def adjust_hedge_qty(self,qty=None,db_orders=None,stratagy=None,add_hedge=False, remove_hedge=False):
+        if add_hedge:
+            pass
+        
+        elif remove_hedge:
+            pass
+    +
     def find_trigger(self):
         for stratagy in self.config:
             if dt.now() > self.config[stratagy][F.ENTRY_TIME] and not self.config[stratagy][F.TRADED]:
-                print(stratagy)
-                self.place_trigger_order(self.config[stratagy])
+                # headge qty calculate
+                stratagy_config = self.config[stratagy]
+                qty = Env.LOT_SIZE * SessionManager.User_Config[stratagy_config[F.STRATAGY]+'_qty'][Env.DTE]
+                
+                self.adjust_hedge_qty(qty,self.db_orders,stratagy_config[F.STRATAGY],add_hedge=True)
+                
+                self.place_trigger_order(stratagy_config,qty)
                 Env.stratagy_config[self.Name][stratagy][F.TRADED] = True
                 
-    def place_trigger_order(self,stratagy_config):
+    def place_trigger_order(self,stratagy_config,qty):
         tickers = Less_Than_Premium(stratagy_config[F.PRICE])
         for ticker in tickers:
             ltp = Get_LTP(ticker)
             # ltp = 100
             tag = stratagy_config[F.STRATAGY] + '//' + ticker +'//' + str(round(time.time()))[-6:]
             price = round(ltp * ((100 - stratagy_config[F.WAIT_PERCENT])/100))
-            qty = Env.LOT_SIZE * SessionManager.User_Config[stratagy_config[F.STRATAGY]+'_qty'][Env.DTE]
             product_type  =  ProductType.MIS
             segment =  Segment.FNO
             order_type  =  OrderType.SL_LIMIT
