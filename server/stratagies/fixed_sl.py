@@ -11,6 +11,7 @@ from server.models.OrderType import OrderType
 from server.models.ProductType import ProductType
 from server.models.Direction import Direction
 from server.models.Segment import Segment
+from server.models.TradeExitReason import TradeExitReason
 from server.core.handler import SessionHandler
 
 import time,logging
@@ -26,13 +27,13 @@ class Fixed_SL(Base_Stratagy) :
     
     def Process(self):
         # self.db.drop()
-        self.validate_order(self.order_book,self.db_orders,self.Name)
         self.find_trigger()
-        self.place_sl_order()
-        self.is_sl_exitst()
-        self.is_lpt_above_sl()
-        
-        # self.check_sl_hit()
+        if len(self.db_orders)>0 :
+            self.place_sl_order()
+            self.is_sl_exitst()
+            self.is_lpt_above_sl()
+            self.validate_order(self.order_book,self.db_orders,self.Name)
+            self.check_sl_hit()
 
     def find_trigger(self):
         for stratagy in self.config:
@@ -40,14 +41,14 @@ class Fixed_SL(Base_Stratagy) :
                 print(stratagy)
                 self.place_trigger_order(self.config[stratagy])
                 Env.stratagy_config[self.Name][stratagy][F.TRADED] = True
-                break
                 
     def place_trigger_order(self,stratagy_config):
         tickers = Less_Than_Premium(stratagy_config[F.PRICE])
-        ltp = 100
         for ticker in tickers:
+            ltp = Get_LTP(ticker)
+            # ltp = 100
             tag = stratagy_config[F.STRATAGY] + '//' + ticker +'//' + str(round(time.time()))[-6:]
-            price = ltp * ((100 - stratagy_config[F.WAIT_PERCENT])/100)
+            price = round(ltp * ((100 - stratagy_config[F.WAIT_PERCENT])/100))
             qty = Env.LOT_SIZE * SessionManager.User_Config[stratagy_config[F.STRATAGY]+'_qty'][Env.DTE]
             product_type  =  ProductType.MIS
             segment =  Segment.FNO
@@ -124,7 +125,7 @@ class Fixed_SL(Base_Stratagy) :
                 product_type = row[F.PRODUCT_TYPE]
                 segment = row[F.SEGEMENT]
                 qty = row[F.QTY]
-                tag = row[F.ENTRY_TAG] + '_SL'
+                tag = row[F.ENTRY_TAG] + '//SL'
                 order = {
                         F.DIRECTION : direction ,
                         F.TICKER : ticker,
@@ -136,16 +137,18 @@ class Fixed_SL(Base_Stratagy) :
                         F.TAG : tag
                     }
                 # print(order)
-                orderid = SessionHandler.broker.place_Order(order)
+                orderid, placed = SessionHandler.broker.Place_Order(order)
                 
-                self.db.update_one({F.ENTRY_ORDERID : row[F.ENTRY_ORDERID]},{"$set" :{
-                                                                                    F.EXIT_PRICE :exit_price,
-                                                                                    F.EXIT_PRICE_INITIAL :exit_price,
-                                                                                    F.EXIT_ORDERID :'orderid',
-                                                                                    F.EXIT_TAG :tag,
-                                                                                    F.EXIT_PRICE_INITIAL :exit_price,
-                                                                                    F.EXIT_STATUS :OrderStatus.VALIDATION_PENDING
-                                                                                    }})
+                if orderid is not None:
+                
+                    self.db.update_one({F.ENTRY_ORDERID : row[F.ENTRY_ORDERID]},{"$set" :{
+                                                                                        F.EXIT_PRICE : exit_price,
+                                                                                        F.EXIT_PRICE_INITIAL : exit_price,
+                                                                                        F.EXIT_ORDERID : orderid,
+                                                                                        F.EXIT_TAG : tag,
+                                                                                        F.EXIT_PRICE_INITIAL : exit_price,
+                                                                                        F.EXIT_STATUS : OrderStatus.VALIDATION_PENDING
+                                                                                        }})
                 
         except Exception as e :
             print(f'Problem in Fixed_SL.place_sl_order {e}')
@@ -155,24 +158,29 @@ class Fixed_SL(Base_Stratagy) :
     def validate_order(self,order_book,db_orders,base_stratagy:str):
         try :
             db_orders = db_orders[(db_orders[F.BASE_STRATAGY] == base_stratagy) & ((db_orders[F.ENTRY_STATUS] == OrderStatus.VALIDATION_PENDING) | (db_orders[F.EXIT_STATUS] == OrderStatus.VALIDATION_PENDING))]
-            if len(db_orders)>0 :
-                for _, row in db_orders.iterrows():
-                    if row[F.ENTRY_STATUS] == OrderStatus.VALIDATION_PENDING:
-                        if order_book[order_book[F.ORDERID] == row[F.ENTRY_ORDERID]].iloc[0][F.ORDER_STATUS] == OrderStatus.COMPLETE :
-                            self.db.update_one({F.ENTRY_ORDERID: row[F.ENTRY_ORDERID]}, { "$set": {F.ENTRY_STATUS : OrderStatus.COMPLETE,F.EXIT_STATUS : OrderStatus.NOT_PLACED}})
-                            logging.info(f'Order Placed in Broker end : {row[F.ENTRY_ORDERID]}...  Wating for placing SL...')
-                            
-                    elif row[F.EXIT_STATUS] == OrderStatus.VALIDATION_PENDING:
-                        if order_book[order_book[F.ORDERID] == row[F.ENTRY_ORDERID]].iloc[0][F.ORDER_STATUS] == OrderStatus.COMPLETE :
-                            self.db.update_one({F.ENTRY_ORDERID: row[F.ENTRY_ORDERID]}, { "$set": {F.EXIT_STATUS : OrderStatus.OPEN}})
-                            logging.info(f'Order Placed in Broker end : {row[F.EXIT_ORDERID]}...')
+            for _, row in db_orders.iterrows():
+                if row[F.ENTRY_STATUS] == OrderStatus.VALIDATION_PENDING:
+                    if order_book[order_book[F.ORDERID] == row[F.ENTRY_ORDERID]].iloc[0][F.ORDER_STATUS] == OrderStatus.COMPLETE :
+                        self.db.update_one({F.ENTRY_ORDERID: row[F.ENTRY_ORDERID]}, { "$set": {F.ENTRY_STATUS : OrderStatus.COMPLETE,F.EXIT_STATUS : OrderStatus.NOT_PLACED}})
+                        logging.info(f'Order Placed in Broker end : {row[F.ENTRY_ORDERID]}...  Wating for placing SL...')
+                        
+                elif row[F.EXIT_STATUS] == OrderStatus.VALIDATION_PENDING:
+                    if order_book[order_book[F.ORDERID] == row[F.ENTRY_ORDERID]].iloc[0][F.ORDER_STATUS] == OrderStatus.COMPLETE :
+                        self.db.update_one({F.ENTRY_ORDERID: row[F.ENTRY_ORDERID]}, { "$set": {F.EXIT_STATUS : OrderStatus.OPEN}})
+                        logging.info(f'Order Placed in Broker end : {row[F.EXIT_ORDERID]}...  SL Placed Broker...')
 
         except Exception as e :
             print(f'Problem in Fixed_SL.validate_order {e}')
     
     def check_sl_hit(self):
-        db_orders = db_orders[(db_orders[F.BASE_STRATAGY] == self.Name) & (db_orders[F.EXIT_STATUS] == OrderStatus.OPEN)]
+        db_orders = self.db_orders[(self.db_orders[F.BASE_STRATAGY] == self.Name) & (self.db_orders[F.EXIT_STATUS] == OrderStatus.OPEN)]
         for _, row in db_orders.iterrows():
-            if self.order_book[self.order_book[F.ORDERID] == row[E.EXIT_ORDERID]].iloc[0][F.ORDER_STATUS] == OrderStatus.COMPLETE:
-                self.db.update_one({F.ENTRY_ORDERID: row[F.ENTRY_ORDERID]}, { "$set": {F.EXIT_STATUS : OrderStatus.CLOSED,F.EXIT_REASON : TradeExitReason.SL_HIT}})
+            trade = self.order_book[self.order_book[F.ORDERID] == row[F.EXIT_ORDERID]].iloc[0]
+            if trade[F.ORDER_STATUS] == OrderStatus.COMPLETE:
+                self.db.update_one({F.ENTRY_ORDERID: row[F.ENTRY_ORDERID]}, { "$set": {
+                                                    F.EXIT_STATUS : OrderStatus.CLOSED,
+                                                    F.EXIT_REASON : TradeExitReason.SL_HIT,
+                                                    F.EXIT_TYPE : trade[F.ORDER_TYPE],
+                                                    F.EXIT_TIME : str(dt.now())
+                                                     }})
                 logging.info(f'SL Hit : {row[F.EXIT_ORDERID]}')

@@ -208,6 +208,12 @@ def database(day_tracker = False, recording = False):
         return mongo_db[F.recording]
     else : 
         return mongo_db[Env.database_name]
+
+def filter_data(base_stratagy,df):
+    try:
+        return df[df[F.BASE_STRATAGY] == base_stratagy]
+    except :
+        return pd.DataFrame()
     
 def send_message(message:str,user:dict,stratagy = None, emergency = False, send_image = False):
     current_time = dt.now()

@@ -29,4 +29,4 @@ def Less_Than_Premium(price):
     return tickers
 
 def Get_LTP(Ticker):
-    return option_chain[Ticker][F.LTP]
+    return round(option_chain[Ticker][F.LTP])

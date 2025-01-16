@@ -18,12 +18,10 @@ class FlatTrade(BaseOrderManager):
     def __init__(self):
         super.__init__()
         
-
     @staticmethod
     def Place_Order(order):
         user = SessionManager.User_Config
         logging.info(f'Placing Order-request : {order}')
-        print(f'Placing Order-request : {order}')
         # product_type =  product_type if product_type != None else Env.product_type
         # print('\nbuy_or_sell : ',FlatTrade.convert_Direction(order[F.DIRECTION]), 
         #         '\nproduct_type : ',FlatTrade.convert_Product_Type(order[F.PRODUCT_TYPE]), 
@@ -45,17 +43,16 @@ class FlatTrade(BaseOrderManager):
                                                 discloseqty = 0, 
                                                 price_type = FlatTrade.convert_Order_Type(order[F.ORDER_TYPE]), 
                                                 price = order[F.PRICE], 
-                                                trigger_price = order[F.PRICE]-0.5 if order[F.DIRECTION] == Direction.LONG  else  order[F.PRICE] +0.5,
+                                                trigger_price = order[F.PRICE] - 0.5 if order[F.DIRECTION] == Direction.LONG  else  order[F.PRICE] + 0.5,
                                                 retention = 'DAY', 
                                                 remarks = order[F.TAG]
                                             )
         
-        print(responce)
         if responce['stat'] == 'Ok' :
-            logging.info(f'Placed MIS Order Sucessfully... Responce : {responce}')
+            logging.info(f'Placed {order[F.PRODUCT_TYPE]} Order Sucessfully... Responce : {responce}')
             return responce['norenordno'] , True
         else :
-            logging.warning(f'Faild MIS Order\n{user[F.USER]}\nParam : {order}\nResponce : {responce}')
+            logging.warning(f'Faild {order[F.PRODUCT_TYPE]} Order\n{user[F.USER]}\nParam : {order}\nResponce : {responce}')
             responce , False
     
     @staticmethod
@@ -151,8 +148,8 @@ class FlatTrade(BaseOrderManager):
         responce = user[F.SESSION].get_order_book()
         # if responce['stat'] == 'Ok' : 
         all_orders = pd.DataFrame(responce)
-        all_orders = FlatTrade.rename(all_orders)[[F.ORDERID,F.SEGEMENT,F.TICKER,F.TOKEN,F.QTY,F.PRODUCT_TYPE,F.MESSAGE,'instname','dname',F.PRICE,F.ORDER_STATUS,F.ORDER_TIME,F.FILLED_QTY]]
         all_orders[[F.INDEX,F.EXPIRY_DATE,F.STRIKE_PRICE,F.OPTION_TYPE]] = (all_orders['dname'].str.strip().str.split(' ',expand = True))
+        all_orders = FlatTrade.rename(all_orders)[[F.ORDERID,F.SEGEMENT,F.TICKER,F.TOKEN,F.QTY,F.PRODUCT_TYPE,F.ORDER_TYPE,F.MESSAGE,F.PRICE,F.ORDER_STATUS,F.ORDER_TIME,F.FILLED_QTY,F.INDEX,F.EXPIRY_DATE,F.STRIKE_PRICE,F.OPTION_TYPE]]
         # all_orders[F.SEGEMENT].replace(FlatTrade.segment_dict, inplace=True)
         all_orders.replace({F.ORDER_STATUS:{'REJECTED': OrderStatus.REJECTED,
                                             'COMPLETE': OrderStatus.COMPLETE,
@@ -254,7 +251,8 @@ class FlatTrade(BaseOrderManager):
             'avgprc': F.PRICE,
             'prc': F.PRICE,
             'trantype': F.TRANSACTION_TYPE,
-            'prctyp' : F.PRODUCT_TYPE,
+            's_prdt_ali' : F.PRODUCT_TYPE,
+            'prctyp' : F.ORDER_TYPE,
             'exch': F.SEGEMENT,
             'status': F.ORDER_STATUS,
             'prcTp' : F.ORDER_TYPE,
