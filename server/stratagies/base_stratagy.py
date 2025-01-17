@@ -64,13 +64,12 @@ class Base_Stratagy :
         sub_stratagy =  Env.stratagy_config[base_stratagy]
         for i in sub_stratagy:
             db_orders = db_orders[(db_orders[F.STRATAGY] == sub_stratagy[i][F.STRATAGY]) & (db_orders[F.EXIT_STATUS] == OrderStatus.OPEN)]
-            if (sub_stratagy[i][F.EXIT_TIME]>dt.now()):
+            if (sub_stratagy[i][F.EXIT_TIME]>dt.now()) & len(db_orders)>0:
                 for _,row in db_orders.iterrows():
                     order_status = order_book[order_book[F.ORDERID]==row[F.EXIT_ORDERID]].iloc[0][F.ORDER_STATUS]
-                    if row[F.EXIT_STATUS] == OrderStatus.OPEN :
+                    if order_status == OrderStatus.TRIGGER_PENDING :
                         ltp = Get_LTP(row[F.TICKER])
-                        
-                        
+                        count = row[F.EXIT_COUNT]
                         order = {F.SEGEMENT: row[F.SEGEMENT],
                                 F.TICKER: row[F.TICKER],
                                 F.ORDERID: row[F.EXIT_ORDERID],
@@ -86,9 +85,18 @@ class Base_Stratagy :
                                                                                         F.EXIT_PRICE : ltp,
                                                                                         F.EXIT_PRICE_INITIAL : ltp,
                                                                                         F.EXIT_REASON : TradeExitReason.SQUARE_OFF,
+                                                                                        F.EXIT_COUNT : count+1
                                                                                         # F.EXIT_STATUS : OrderStatus.TRIGGER_PENDING
                                                                                         }})
-            # if
+                    elif order_status == OrderStatus.COMPLETE :
+                        exit_price = order_book[order_book[F.ORDERID]==row[F.EXIT_ORDERID]].iloc[0][F.PRICE]
+                        exit_type = order_book[order_book[F.ORDERID]==row[F.EXIT_ORDERID]].iloc[0][F.ORDER_TYPE]
+                        self.db.update_one({F.EXIT_ORDERID : row[F.EXIT_ORDERID]},{"$set" :{
+                                                                                        F.EXIT_PRICE : exit_price,
+                                                                                        F.EXIT_TYPE : exit_type,
+                                                                                        F.EXIT_STATUS : OrderStatus.CLOSED
+                                                                                        }})
+                        
                     
     
         
