@@ -168,24 +168,6 @@ class Fixed_SL(Base_Stratagy) :
 
         # Check is entry order status in complete if yes then place sl
         
-    def validate_order(self,base_stratagy:str):
-        order_book = self.order_book
-        db_orders = self.db_orders
-        try :
-            db_orders = db_orders[(db_orders[F.BASE_STRATAGY] == base_stratagy) & ((db_orders[F.ENTRY_STATUS] == OrderStatus.VALIDATION_PENDING) | (db_orders[F.EXIT_STATUS] == OrderStatus.VALIDATION_PENDING))]
-            for _, row in db_orders.iterrows():
-                if row[F.ENTRY_STATUS] == OrderStatus.VALIDATION_PENDING:
-                    if order_book[order_book[F.ORDERID] == row[F.ENTRY_ORDERID]].iloc[0][F.ORDER_STATUS] == OrderStatus.COMPLETE :
-                        self.db.update_one({F.ENTRY_ORDERID: row[F.ENTRY_ORDERID]}, { "$set": {F.ENTRY_STATUS : OrderStatus.COMPLETE,F.EXIT_STATUS : OrderStatus.NOT_PLACED}})
-                        logging.info(f'Order Placed in Broker end : {row[F.ENTRY_ORDERID]}...  Wating for placing SL...')
-                        
-                elif row[F.EXIT_STATUS] == OrderStatus.VALIDATION_PENDING:
-                    if order_book[order_book[F.ORDERID] == row[F.ENTRY_ORDERID]].iloc[0][F.ORDER_STATUS] == OrderStatus.COMPLETE :
-                        self.db.update_one({F.ENTRY_ORDERID: row[F.ENTRY_ORDERID]}, { "$set": {F.EXIT_STATUS : OrderStatus.OPEN}})
-                        logging.info(f'Order Placed in Broker end : {row[F.EXIT_ORDERID]}...  SL Placed Broker...')
-
-        except Exception as e :
-            print(f'Problem in Fixed_SL.validate_order {e}')
     
     def check_sl_hit(self):
         db_orders = self.db_orders[(self.db_orders[F.BASE_STRATAGY] == self.Name) & (self.db_orders[F.EXIT_STATUS] == OrderStatus.OPEN)]
