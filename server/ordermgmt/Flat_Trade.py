@@ -68,7 +68,7 @@ class FlatTrade(BaseOrderManager):
                                                 newprice=order[F.PRICE],  
                                                 newtrigger_price=order[F.PRICE]-0.5 if order[F.DIRECTION] == Direction.LONG  else  order[F.PRICE] +0.5,
                                                 )
-
+        print(responce)
         try : 
             if responce['stat'] == 'Ok' :
                 logging.info(f'Modified Sucessfully: {responce}')

@@ -19,11 +19,10 @@ import time,logging
 class Fixed_SL(Base_Stratagy) :
     
     def __init__(self,config,order_book,db_orders):
-        super().__init__() 
+        super().__init__(order_book,db_orders) 
         self.Name = F.FIXED_SL
         self.config = config
-        self.order_book = order_book
-        self.db_orders = db_orders
+        
     
     def Process(self):
         # self.db.drop()
@@ -32,8 +31,10 @@ class Fixed_SL(Base_Stratagy) :
             self.place_sl_order()
             self.is_sl_exitst()
             self.is_lpt_above_sl()
-            self.validate_order(self.order_book,self.db_orders,self.Name)
+            self.validate_order(self.Name)
             self.check_sl_hit()
+            # self.find_exit(self.Name)
+            
 
     def adjust_hedge_qty(self,qty=None,db_orders=None,stratagy=None,add_hedge=False, remove_hedge=False):
         if add_hedge:
@@ -41,12 +42,13 @@ class Fixed_SL(Base_Stratagy) :
         
         elif remove_hedge:
             pass
-    +
+
     def find_trigger(self):
         for stratagy in self.config:
             if dt.now() > self.config[stratagy][F.ENTRY_TIME] and not self.config[stratagy][F.TRADED]:
                 # headge qty calculate
                 stratagy_config = self.config[stratagy]
+                print(stratagy_config)
                 qty = Env.LOT_SIZE * SessionManager.User_Config[stratagy_config[F.STRATAGY]+'_qty'][Env.DTE]
                 
                 self.adjust_hedge_qty(qty,self.db_orders,stratagy_config[F.STRATAGY],add_hedge=True)
@@ -166,7 +168,9 @@ class Fixed_SL(Base_Stratagy) :
 
         # Check is entry order status in complete if yes then place sl
         
-    def validate_order(self,order_book,db_orders,base_stratagy:str):
+    def validate_order(self,base_stratagy:str):
+        order_book = self.order_book
+        db_orders = self.db_orders
         try :
             db_orders = db_orders[(db_orders[F.BASE_STRATAGY] == base_stratagy) & ((db_orders[F.ENTRY_STATUS] == OrderStatus.VALIDATION_PENDING) | (db_orders[F.EXIT_STATUS] == OrderStatus.VALIDATION_PENDING))]
             for _, row in db_orders.iterrows():
