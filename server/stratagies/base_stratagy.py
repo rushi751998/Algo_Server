@@ -126,12 +126,21 @@ class Base_Stratagy :
                             self.db.update_one({F.EXIT_ORDERID : row[F.EXIT_ORDERID]},{"$set" :{
                                                                                         F.EXIT_COUNT : count+1
                                                                                         }})
-                        
+    def Monitor_Trades(self,base_stratagy):
+        order_book = self.order_book
+        db_orders = self.db_orders
+        db_orders = db_orders[db_orders[F.EXIT_STATUS]==OrderStatus.OPEN]
+        if db_orders:
+            for _,row in db_orders.iterrows():
+                pass                 
                     
     
         
-    def is_sl_exitst(self):
-        pass
+    def is_sl_exitst(self,base_stratagy):
+        order_book = self.order_book
+        db_orders = self.db_orders
+        
     
-    def is_lpt_above_sl(self):
-        pass
+    def is_lpt_above_sl(self,base_stratagy,):
+        order_book = self.order_book
+        db_orders = self.db_orders
